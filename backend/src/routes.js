@@ -1,15 +1,10 @@
-const express = require('require');
+const express = require('express');
+
+const EstablishmentsController = require('./controllers/EstablishmentsController');
 
 const routes = express.Router();
 
-routes.get('/', (request, response) => {
-    const params = request.params;
-
-    return response.json({
-        aplication: 'Cadastro Fitcard',
-        description: 'Teste prático para contratação',
-        author: 'Tiago Carnevalli Elias'
-    });
-});
+routes.get('/establishments', EstablishmentsController.index);
+routes.post('/establishments', EstablishmentsController.create);
 
 module.exports = routes;
