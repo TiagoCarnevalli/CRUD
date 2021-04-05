@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;1,700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font: 400 14px Rubik, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+input, button, textarea, select {
+    font: 400 16px Rubik, sans-serif;
+}
+
+button {
+    cursor: pointer;
+}
+
+form input, select {
+    width: 300px;
+    height: 40px;
+    color: #353535;
+    border: 1px solid #a5a5a5;
+    border-radius: 5px;
+    padding: 0 20px;
+    transition: border 0.5s;
+}
+
+form input:focus {
+    border: 1px solid #000000;
+}
