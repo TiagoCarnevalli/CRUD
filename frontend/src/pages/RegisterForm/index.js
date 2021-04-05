@@ -7,16 +7,16 @@ export default function RegisterForm() {
             <div className='content'>
                 <h2>Registro de Estabelecimento</h2>
                 <form>
-                    <input placeholder='Razão Social' />
+                    <input placeholder='Razão Social' required />
                     <input placeholder='Nome Fantasia' />
-                    <input placeholder='CNPJ' />
+                    <input placeholder='CNPJ' required />
                     <input placeholder='E-mail' type='email' />
                     <input placeholder='Endereço' />
                     <div className='input-city'>
                         <input placeholder='Cidade' style={{ width: '80%' }} />
                         <input placeholder='UF' style={{ width: '20%' }} />
                     </div>
-                    <input placeholder='Telefone' />
+                    <input placeholder='Telefone' required={false/** Categoria === Supermercado */} />
                     <input placeholder='Data de Cadastro' type='date' />
                     <select placeholder='Categoria'>
                         <option value={null} selected disabled hidden>Categoria</option>
