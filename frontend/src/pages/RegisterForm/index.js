@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import './styles.css';
 import api from '../../services/api';
 import { FiArrowLeft } from 'react-icons/fi';
-import InputMask from 'react-input-mask';
 
 export default function RegisterForm() {
     const [socialName, setSocialName] = useState('');
@@ -21,34 +20,61 @@ export default function RegisterForm() {
     const [cc, setCc] = useState('');
     
     // const history = useHistory();    //Dando erro
+    function validarCNPJ() {
+        const multiplier = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+        var cnpjAux = cnpj.replace(/\./g, '').replace('/','').replace('-', '').split('');
+        var dvr = 0;
+        var dvl = 0
+        for(var i = 0; i < 12; i++) {
+            dvl += cnpjAux[i] * multiplier[i+1];
+        }
+        // eslint-disable-next-line
+        if (11 - dvl % 11 == cnpjAux[12]) {
+            for(i = 0; i < 13; i++) {
+                dvr += cnpjAux[i] * multiplier[i];
+            }
+            // eslint-disable-next-line
+            if (11 - dvr % 11 == cnpjAux[13]) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     async function handleRegister(e) {
-        e.preventDefault();
+        // e.preventDefault();
 
-        const data = {
-            social_name: socialName,
-            fantasy_name: fantasyName,
-            cnpj,
-            email,
-            adress,
-            city,
-            uf,
-            phone,
-            date: registerDate,
-            category,
-            status,
-            agency,
-            cc,
-        };
+        if (validarCNPJ() === true) {
+            const data = {
+                social_name: socialName,
+                fantasy_name: fantasyName,
+                cnpj,
+                email,
+                adress,
+                city,
+                uf,
+                phone,
+                date: registerDate,
+                category,
+                status,
+                agency,
+                cc,
+            };
 
-        try {
-            const response = await api.post('establishments', data);
+            try {
+                const response = await api.post('establishments', data);
 
-            alert(`Cadastro realizado com sucesso.\nO ID do estabelecimento ${socialName} é ${response.data.id}`);
+                alert(`Cadastro realizado com sucesso.\nO ID do estabelecimento ${socialName} é ${response.data.id}`);
 
-            // history.push('/');   //Dando erro
-        } catch (err) {
-            alert('Cadastro não realizado...tente novamente');
+                // history.push('/');   //Dando erro
+            } catch (err) {
+                alert('Cadastro não realizado...tente novamente');
+            }
+        } else {
+            alert('CNPJ inválido!');
         }
     }
 
@@ -69,13 +95,12 @@ export default function RegisterForm() {
                         .replace(/(\d{3})(\d)/,'$1/$2')
                         .replace(/(\d{4})(\d)/,'$1-$2')
                         .replace(/(-\d{2})\d+?$/,'$1')
-                    } onChange={e => setCnpj(e.target.value)} placeholder='CNPJ' required />
-                    <InputMask />
+                    } onChange={e => setCnpj(e.target.value)} placeholder='CNPJ' required minLength={14} />
                     <input value={email} onChange={e => setEmail(e.target.value)} placeholder='E-mail' type='email' />
                     <input value={adress} onChange={e => setAdress(e.target.value)} placeholder='Endereço' />
                     <div className='input-city'>
                         <input value={city} onChange={e => setCity(e.target.value)} placeholder='Cidade' style={{ width: '80%' }} />
-                        <input value={uf.toUpperCase().replace()} onChange={e => setUf(e.target.value)} placeholder='UF' style={{ width: '20%' }} maxLength={2} />
+                        <input value={uf.toUpperCase().replace(/[^a-zA-Z]+/g, '')} onChange={e => setUf(e.target.value)} placeholder='UF' style={{ width: '20%' }} maxLength={2} />
                     </div>
                     <input value={phone
                         .replace(/\D/g, '')
