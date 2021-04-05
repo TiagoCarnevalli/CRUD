@@ -1,40 +1,115 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './styles.css';
+import api from '../../services/api';
+import { FiArrowLeft } from 'react-icons/fi';
+import InputMask from 'react-input-mask';
 
 export default function RegisterForm() {
+    const [socialName, setSocialName] = useState('');
+    const [fantasyName, setFantasyName] = useState('');
+    const [cnpj, setCnpj] = useState('');
+    const [email, setEmail] = useState('');
+    const [adress, setAdress] = useState('');
+    const [city, setCity] = useState('');
+    const [uf, setUf] = useState('');
+    const [phone, setPhone] = useState('');
+    const [registerDate, setRegisterDate] = useState(Date());
+    const [category, setCategory] = useState('');
+    const [status, setStatus] = useState(false);
+    const [agency, setAgency] = useState('');
+    const [cc, setCc] = useState('');
+    
+    // const history = useHistory();    //Dando erro
+
+    async function handleRegister(e) {
+        e.preventDefault();
+
+        const data = {
+            social_name: socialName,
+            fantasy_name: fantasyName,
+            cnpj,
+            email,
+            adress,
+            city,
+            uf,
+            phone,
+            date: registerDate,
+            category,
+            status,
+            agency,
+            cc,
+        };
+
+        try {
+            const response = await api.post('establishments', data);
+
+            alert(`Cadastro realizado com sucesso.\nO ID do estabelecimento ${socialName} é ${response.data.id}`);
+
+            // history.push('/');   //Dando erro
+        } catch (err) {
+            alert('Cadastro não realizado...tente novamente');
+        }
+    }
+
     return (
         <div className='register-container'>
             <div className='content'>
+                <header>
+                    <Link to='/'><FiArrowLeft style={{ marginRight: 5 }} />Voltar</Link>
+                </header>
                 <h2>Registro de Estabelecimento</h2>
-                <form>
-                    <input placeholder='Razão Social' required />
-                    <input placeholder='Nome Fantasia' />
-                    <input placeholder='CNPJ' required />
-                    <input placeholder='E-mail' type='email' />
-                    <input placeholder='Endereço' />
+                <form onSubmit={handleRegister}>
+                    <input value={socialName} onChange={e => setSocialName(e.target.value)} placeholder='Razão Social' required />
+                    <input value={fantasyName} onChange={e => setFantasyName(e.target.value)} placeholder='Nome Fantasia' />
+                    <input value={cnpj
+                        .replace(/\D/g, '')
+                        .replace(/(\d{2})(\d)/,'$1.$2')
+                        .replace(/(\d{3})(\d)/,'$1.$2')
+                        .replace(/(\d{3})(\d)/,'$1/$2')
+                        .replace(/(\d{4})(\d)/,'$1-$2')
+                        .replace(/(-\d{2})\d+?$/,'$1')
+                    } onChange={e => setCnpj(e.target.value)} placeholder='CNPJ' required />
+                    <InputMask />
+                    <input value={email} onChange={e => setEmail(e.target.value)} placeholder='E-mail' type='email' />
+                    <input value={adress} onChange={e => setAdress(e.target.value)} placeholder='Endereço' />
                     <div className='input-city'>
-                        <input placeholder='Cidade' style={{ width: '80%' }} />
-                        <input placeholder='UF' style={{ width: '20%' }} />
+                        <input value={city} onChange={e => setCity(e.target.value)} placeholder='Cidade' style={{ width: '80%' }} />
+                        <input value={uf.toUpperCase().replace()} onChange={e => setUf(e.target.value)} placeholder='UF' style={{ width: '20%' }} maxLength={2} />
                     </div>
-                    <input placeholder='Telefone' required={false/** Categoria === Supermercado */} />
-                    <input placeholder='Data de Cadastro' type='date' />
-                    <select placeholder='Categoria'>
-                        <option value={null} selected disabled hidden>Categoria</option>
-                        <option>Supermercado</option>
-                        <option>Restaurante</option>
-                        <option>Borracharia</option>
-                        <option>Posto</option>
-                        <option>Oficina</option>
+                    <input value={phone
+                        .replace(/\D/g, '')
+                        .replace(/(\d{2})(\d)/, '($1) $2')
+                        .replace(/(\d{5})(\d)/, '$1-$2')
+                        .replace(/(-\d{4})\d+?$/, '$1')
+                    } onChange={e => setPhone(e.target.value)} placeholder='Telefone com DDD' required={category === 'Supermercado'} />
+                    <input value={registerDate} onChange={e => setRegisterDate(e.target.value)} placeholder='Data de Cadastro' type='date' required />
+                    <select value={category} onChange={e => setCategory(e.target.value)} placeholder='Categoria'>
+                        <option value='' selected disabled hidden>Categoria</option>
+                        <option value='Supermercado'>Supermercado</option>
+                        <option value='Restaurante'>Restaurante</option>
+                        <option value='Borracharia'>Borracharia</option>
+                        <option value='Posto'>Posto</option>
+                        <option value='Oficina'>Oficina</option>
                     </select>
-                    <select placeholder='Status'>
-                        <option valeu={null} selected disabled hidden>Status</option>
-                        <option>Ativo</option>
-                        <option>Inativo</option>
+                    <select value={status} onChange={e => setStatus(e.target.value)} placeholder='Status'>
+                        <option value={false} selected disabled hidden>Status</option>
+                        <option value={true}>Ativo</option>
+                        <option value={false}>Inativo</option>
                     </select>
-                    <input placeholder='Agência' />
-                    <input placeholder='Conta' />
+                    <input value={agency
+                        .replace(/\D/g, '')
+                        .replace(/(\d{3})(\d)/, '$1-$2')
+                        .replace(/(-\d{1})\d+?$/, '$1')
+                    } onChange={e => setAgency(e.target.value)} placeholder='Agência' />
+                    <input value={cc
+                        .replace(/\D/g, '')
+                        .replace(/(\d{2})(\d)/, '$1.$2')
+                        .replace(/(\d{3})(\d)/, '$1-$2')
+                        .replace(/(-\d{1})\d+?$/, '$1')
+                    } onChange={e => setCc(e.target.value)} placeholder='Conta' />
+                    <button type='submit'>Registrar</button>
                 </form>
-                <button type='submit'>Registrar</button>
             </div>
         </div>
     );
