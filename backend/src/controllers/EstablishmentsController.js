@@ -3,11 +3,20 @@ const connection = require('../database/connection');
 
 module.exports = {
     async index(request, response) {
-        const establishments = await connection('establishments').select('*');
+        // const { page = 1 } = request.query;
+
+        const [count] = await connection('establishments').count();
+        console.log(count);
+        const establishments = await connection('establishments')
+        // .limit(10)
+        // .offset((page-1) * 5)
+        .select('*');
+
+        response.header('X-Register-Count', count['count(*)']);
     
         return response.json(establishments);
     },
-    
+
     async create(request, response) {
         const {
             social_name,
@@ -45,5 +54,19 @@ module.exports = {
         })
     
         return response.json({ id });
+    },
+
+    async delete(request, response) {
+        const { id } = request.params;
+
+        const establishment = await connection('establishments').where('id', id).select('id').first();
+
+        if (establishment.id !== id) {
+            return response.status(401).json({error: 'Operação não permitida.'});
+        }
+
+        await connection('establishments').where('id', establishment.id).delete();
+
+        return response.status(204).send();
     }
 }
