@@ -4,7 +4,7 @@ import './styles.css';
 import api from '../../services/api';
 import { FiArrowLeft } from 'react-icons/fi';
 
-export default function RegisterEdit({ id }) {
+export default function RegisterEdit() {
     const [socialName, setSocialName] = useState('');
     const [fantasyName, setFantasyName] = useState('');
     const [cnpj, setCnpj] = useState('');
@@ -20,15 +20,36 @@ export default function RegisterEdit({ id }) {
     const [cc, setCc] = useState('');
     const [establishments, setEstablishments] = useState([]);
 
+    const [estabInfo, setEstabInfo] = useState();
+    
+    const history = useHistory();    //Dando erro
+
+    const id = history.location.pathname.replace('/edit/', '');
+
     useEffect(() => {
         api.get('establishments').then(response => {
             setEstablishments(response.data);
-        })
+        });
     }, []);
 
-    console.log(establishments);
-    
-    const history = useHistory();    //Dando erro
+    useEffect(() => {
+        // eslint-disable-next-line
+        setEstabInfo(establishments.find(establishment => establishment.id === id));
+
+        setSocialName(estabInfo?.social_name || '');
+        setFantasyName(estabInfo?.fantasy_name || '');
+        setCnpj(estabInfo?.cnpj || '');
+        setEmail(estabInfo?.email || '');
+        setAdress(estabInfo?.adress || '');
+        setCity(estabInfo?.city || '');
+        setUf(estabInfo?.uf || '');
+        setPhone(estabInfo?.phone || '');
+        setRegisterDate(estabInfo?.date || '');
+        setCategory(estabInfo?.category || '');
+        setStatus(estabInfo?.status || '');
+        setAgency(estabInfo?.agency || '');
+        setCc(estabInfo?.cc || '');
+    }, [establishments, estabInfo, id]);
 
     function validarCNPJ() {
         const multiplier = [6,5,4,3,2,9,8,7,6,5,4,3,2];
@@ -76,7 +97,7 @@ export default function RegisterEdit({ id }) {
 
             try {
                 // eslint-disable-next-line
-                const response = await api.put('establishments', data);
+                const response = await api.put(`establishments/${id}`, data);
 
                 alert(`Edição realizada com sucesso.\nO estabelecimento ${socialName} está atualizado`);
 
@@ -100,7 +121,7 @@ export default function RegisterEdit({ id }) {
                     <input value={socialName} onChange={e => setSocialName(e.target.value)} placeholder='Razão Social' required />
                     <input value={fantasyName} onChange={e => setFantasyName(e.target.value)} placeholder='Nome Fantasia' />
                     <input value={cnpj
-                        .replace(/\D/g, '')
+                        ?.replace(/\D/g, '')
                         .replace(/(\d{2})(\d)/,'$1.$2')
                         .replace(/(\d{3})(\d)/,'$1.$2')
                         .replace(/(\d{3})(\d)/,'$1/$2')
@@ -111,10 +132,10 @@ export default function RegisterEdit({ id }) {
                     <input value={adress} onChange={e => setAdress(e.target.value)} placeholder='Endereço' />
                     <div className='input-city'>
                         <input value={city} onChange={e => setCity(e.target.value)} placeholder='Cidade' style={{ width: '80%' }} />
-                        <input value={uf.toUpperCase().replace(/[^a-zA-Z]+/g, '')} onChange={e => setUf(e.target.value)} placeholder='UF' style={{ width: '20%' }} maxLength={2} />
+                        <input value={uf?.toUpperCase().replace(/[^a-zA-Z]+/g, '')} onChange={e => setUf(e.target.value)} placeholder='UF' style={{ width: '20%' }} maxLength={2} />
                     </div>
                     <input value={phone
-                        .replace(/\D/g, '')
+                        ?.replace(/\D/g, '')
                         .replace(/(\d{2})(\d)/, '($1) $2')
                         .replace(/(\d{5})(\d)/, '$1-$2')
                         .replace(/(-\d{4})\d+?$/, '$1')
@@ -134,12 +155,12 @@ export default function RegisterEdit({ id }) {
                         <option value={false}>Inativo</option>
                     </select>
                     <input value={agency
-                        .replace(/\D/g, '')
+                        ?.replace(/\D/g, '')
                         .replace(/(\d{3})(\d)/, '$1-$2')
                         .replace(/(-\d{1})\d+?$/, '$1')
                     } onChange={e => setAgency(e.target.value)} placeholder='Agência' />
                     <input value={cc
-                        .replace(/\D/g, '')
+                        ?.replace(/\D/g, '')
                         .replace(/(\d{2})(\d)/, '$1.$2')
                         .replace(/(\d{3})(\d)/, '$1-$2')
                         .replace(/(-\d{1})\d+?$/, '$1')

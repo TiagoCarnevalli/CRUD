@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles.css';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiPlus, FiEye, FiEdit, FiTrash2, FiX } from 'react-icons/fi';
 import api from '../../services/api';
 
@@ -8,6 +8,7 @@ export default function EstablishmentsGrid() {
     const [establishments, setEstablishments] = useState([]);
     const [establishmentInfo, setEstablishmentInfo] = useState();
     const [modalOpened, setModalOpened] = useState(false);
+    const history = useHistory();
 
     useEffect(() => {
         api.get('establishments').then(response => {
@@ -27,6 +28,10 @@ export default function EstablishmentsGrid() {
     function handleOpenModal(id) {
         setModalOpened(!modalOpened);
         setEstablishmentInfo(establishments.find(info => info.id === id));
+    }
+
+    function handleEdit(id) {
+        history.push(`edit/${id}`);
     }
 
     return (
@@ -56,7 +61,7 @@ export default function EstablishmentsGrid() {
                         <td>{data.status === 'true' || data.status === 1 ? 'Ativo' : 'Inativo'}</td>
                         <td>
                             <button onClick={() => handleOpenModal(data.id)}><FiEye style={{ color: '#4e80c7' }} /></button>
-                            <button disabled onClick={() => {}}><FiEdit style={{ color: '#4ec754' }} /></button>
+                            <button onClick={() => handleEdit(data.id)}><FiEdit style={{ color: '#4ec754' }} /></button>
                             <button onClick={() => handleDelete(data.id)}><FiTrash2 style={{ color: '#aa0000'}} /></button>
                         </td>
                     </tr>
