@@ -3,14 +3,8 @@ const connection = require('../database/connection');
 
 module.exports = {
     async index(request, response) {
-        // const { page = 1 } = request.query;
-
         const [count] = await connection('establishments').count();
-        console.log(count);
-        const establishments = await connection('establishments')
-        // .limit(10)
-        // .offset((page-1) * 5)
-        .select('*');
+        const establishments = await connection('establishments').select('*');
 
         response.header('X-Register-Count', count['count(*)']);
     
@@ -54,6 +48,50 @@ module.exports = {
         })
     
         return response.json({ id });
+    },
+
+    async edit(request, response) {
+        const { id } = request.params;
+
+        const establishment = await connection('establishments').where('id', id).select('*').first();
+
+        if (establishment.id !== id) {
+            return response.status(401).json({error: 'Operação não permitida.'});
+        }
+        
+        const {
+            social_name,
+            fantasy_name,
+            cnpj,
+            email,
+            adress,
+            city,
+            uf,
+            phone,
+            date,
+            category,
+            status,
+            agency,
+            cc
+        } = request.body;
+    
+        await connection('establishments').where('id', establishment.id).update({
+            social_name,
+            fantasy_name,
+            cnpj,
+            email,
+            adress,
+            city,
+            uf,
+            phone,
+            date,
+            category,
+            status,
+            agency,
+            cc
+        })
+
+        return response.status(204).send();
     },
 
     async delete(request, response) {

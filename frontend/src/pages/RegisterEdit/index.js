@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import './styles.css';
 import api from '../../services/api';
 import { FiArrowLeft } from 'react-icons/fi';
 
-export default function RegisterForm() {
+export default function RegisterEdit({ id }) {
     const [socialName, setSocialName] = useState('');
     const [fantasyName, setFantasyName] = useState('');
     const [cnpj, setCnpj] = useState('');
@@ -18,9 +18,18 @@ export default function RegisterForm() {
     const [status, setStatus] = useState(false);
     const [agency, setAgency] = useState('');
     const [cc, setCc] = useState('');
+    const [establishments, setEstablishments] = useState([]);
+
+    useEffect(() => {
+        api.get('establishments').then(response => {
+            setEstablishments(response.data);
+        })
+    }, []);
+
+    console.log(establishments);
     
     const history = useHistory();    //Dando erro
-    
+
     function validarCNPJ() {
         const multiplier = [6,5,4,3,2,9,8,7,6,5,4,3,2];
         var cnpjAux = cnpj.replace(/\./g, '').replace('/','').replace('-', '').split('');
@@ -45,7 +54,7 @@ export default function RegisterForm() {
         }
     }
 
-    async function handleRegister(e) {
+    async function handleEdit(e) {
         e.preventDefault();
 
         if (validarCNPJ() === true) {
@@ -66,13 +75,14 @@ export default function RegisterForm() {
             };
 
             try {
-                const response = await api.post('establishments', data);
+                // eslint-disable-next-line
+                const response = await api.put('establishments', data);
 
-                alert(`Cadastro realizado com sucesso.\nO ID do estabelecimento ${socialName} é ${response.data.id}`);
+                alert(`Edição realizada com sucesso.\nO estabelecimento ${socialName} está atualizado`);
 
                 history.push('/');   //Dando erro
             } catch (err) {
-                alert('Cadastro não realizado...tente novamente');
+                alert('Edição não realizada...tente novamente');
             }
         } else {
             alert('CNPJ inválido!');
@@ -80,13 +90,13 @@ export default function RegisterForm() {
     }
 
     return (
-        <div className='register-container'>
+        <div className='edit-container'>
             <div className='content'>
                 <header>
                     <Link to='/'><FiArrowLeft style={{ marginRight: 5 }} />Voltar</Link>
                 </header>
-                <h2>Registro de Estabelecimento</h2>
-                <form onSubmit={handleRegister}>
+                <h2>Edição de Estabelecimento</h2>
+                <form onSubmit={handleEdit}>
                     <input value={socialName} onChange={e => setSocialName(e.target.value)} placeholder='Razão Social' required />
                     <input value={fantasyName} onChange={e => setFantasyName(e.target.value)} placeholder='Nome Fantasia' />
                     <input value={cnpj
@@ -134,7 +144,7 @@ export default function RegisterForm() {
                         .replace(/(\d{3})(\d)/, '$1-$2')
                         .replace(/(-\d{1})\d+?$/, '$1')
                     } onChange={e => setCc(e.target.value)} placeholder='Conta' />
-                    <button type='submit'>Registrar</button>
+                    <button type='submit'>Alterar</button>
                 </form>
             </div>
         </div>
