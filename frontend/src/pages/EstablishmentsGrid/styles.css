@@ -42,6 +42,11 @@
     text-align: center;
 }
 
+.establishment-container table th {
+    background: #dbe1ff;
+    padding: 10px 0;
+}
+
 .establishment-container table td:first-child {
     text-align: left;
     width: 300px;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import './styles.css';
 import api from '../../services/api';
@@ -18,8 +18,15 @@ export default function RegisterForm() {
     const [status, setStatus] = useState(false);
     const [agency, setAgency] = useState('');
     const [cc, setCc] = useState('');
+    const [establishments, setEstablishments] = useState([]);
     
     const history = useHistory();    //Dando erro
+
+    useEffect(() => {
+        api.get('establishments').then(response => {
+            setEstablishments(response.data);
+        })
+    }, []);
     
     function validarCNPJ() {
         const multiplier = [6,5,4,3,2,9,8,7,6,5,4,3,2];
@@ -48,7 +55,7 @@ export default function RegisterForm() {
     async function handleRegister(e) {
         e.preventDefault();
 
-        if (validarCNPJ() === true) {
+        if (validarCNPJ() === true && establishments.findIndex(establishment => establishment.cnpj === cnpj) < 0) {
             const data = {
                 social_name: socialName,
                 fantasy_name: fantasyName,

@@ -77,8 +77,8 @@ export default function RegisterEdit() {
 
     async function handleEdit(e) {
         e.preventDefault();
-
-        if (validarCNPJ() === true) {
+        
+        if (validarCNPJ() === true && (estabInfo.cnpj === cnpj || establishments.findIndex(establishment => establishment.cnpj === cnpj) < 0)) {
             const data = {
                 social_name: socialName,
                 fantasy_name: fantasyName,
