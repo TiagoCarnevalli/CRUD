@@ -150,7 +150,6 @@ export default function RegisterEdit() {
                         <option value='Oficina'>Oficina</option>
                     </select>
                     <select value={status} onChange={e => setStatus(e.target.value)} placeholder='Status'>
-                        <option value={false} selected disabled hidden>Status</option>
                         <option value={true}>Ativo</option>
                         <option value={false}>Inativo</option>
                     </select>
